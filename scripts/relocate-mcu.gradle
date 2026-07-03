@@ -1,0 +1,41 @@
+def vendorPackage = "io.github.palexdev.mcu.vendor"
+def localMcuPackages = [
+        "blend", "contrast", "dislike", "dynamiccolor", "hct",
+        "palettes", "quantize", "scheme", "score", "temperature", "utils"
+] as Set
+
+def packageRe = ~/(?m)^package (\w+);/
+def importRe = ~/(?m)^import( static)?\s+(\w+)\./
+def strippedImportRe = ~/(?m)^import (androidx\.annotation|com\.google\.errorprone\.annotations)\.\w+;\n/
+def strippedAnnotations = ["NonNull", "Nullable", "CanIgnoreReturnValue", "CheckReturnValue", "Var"]
+def annotationUsageRe = ~/@(?:${strippedAnnotations.join("|")})\s+/
+
+tasks.register('relocateMcu') {
+    def srcDir = file("external/mcu/java")
+    def outDir = layout.buildDirectory.dir("generated/mcu")
+    inputs.dir(srcDir)
+    outputs.dir(outDir)
+
+    doLast {
+        def root = new File(outDir.get().asFile, vendorPackage.replace('.', '/'))
+        root.parentFile?.deleteDir();
+        srcDir.eachFileRecurse { f ->
+            if (f.isFile() && f.name.endsWith(".java")) {
+                def rel = srcDir.toPath().relativize(f.toPath()).toString()
+                def target = new File(root, rel)
+                target.parentFile.mkdirs()
+
+                def text = f.text;
+                text = text
+                        .replaceAll(strippedImportRe, "")
+                        .replaceAll(annotationUsageRe, "")
+                        .replaceAll(packageRe) { full, pkg -> "package ${vendorPackage}.${pkg};" }
+                        .replaceAll(importRe) { full, staticKw, pkg ->
+                            staticKw = staticKw ?: ""
+                            (pkg in localMcuPackages) ? "import${staticKw} ${vendorPackage}.${pkg}." : full
+                        }
+                target.text = text
+            }
+        }
+    }
+}

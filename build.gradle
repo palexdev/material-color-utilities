@@ -1,0 +1,59 @@
+plugins {
+    id 'java-library'
+    id 'org.openjfx.javafxplugin' version "$jfxPlugin"
+    id 'com.vanniktech.maven.publish' version "$mavenPublishPlugin"
+}
+
+group = 'io.github.palexdev'
+version = "$libVer"
+
+ext {
+    scriptsDir = new File(rootDir, "scripts")
+}
+
+apply from: "${scriptsDir}/relocate-mcu.gradle"
+sourceSets.main.java.srcDir(relocateMcu)
+
+// Remove vanniktech nonsense
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(plainJavadocJar)) {
+        plainJavadocJar.enabled = false
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.testfx:testfx-junit5:$testfx"
+    testImplementation platform("org.junit:junit-bom:$junit")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+compileJava {
+    sourceCompatibility = "$jdk"
+    targetCompatibility = "$jdk"
+}
+
+javafx {
+    version = "$jfx"
+    modules = ["javafx.controls"]
+    configurations = ['testImplementation']
+}
+
+test {
+    useJUnitPlatform()
+    failOnNoDiscoveredTests = false
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+}
