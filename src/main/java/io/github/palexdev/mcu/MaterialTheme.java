@@ -9,11 +9,11 @@ import io.github.palexdev.mcu.vendor.palettes.TonalPalette;
 import java.util.Map;
 
 public record MaterialTheme(
-        SchemeVariant variant,
-        Colors colors,
-        ColorScheme lightScheme,
-        ColorScheme darkScheme,
-        Map<String, CustomColor> customColors
+    SchemeVariant variant,
+    Colors colors,
+    ColorScheme lightScheme,
+    ColorScheme darkScheme,
+    Map<String, CustomColor> customColors
 ) {
 
     //================================================================================

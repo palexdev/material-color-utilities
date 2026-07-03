@@ -17,12 +17,12 @@ public enum ExportFormat {
             // Light Scheme
             sb.append(".light {").append("\n");
             getSchemeColors(theme, false).forEach((k, v) ->
-                    sb.append("  ").append(k).append(": ").append(v).append(";\n"));
+                sb.append("  ").append(k).append(": ").append(v).append(";\n"));
             sb.append("}\n\n");
             // Dark Scheme
             sb.append(".dark {").append("\n");
             getSchemeColors(theme, true).forEach((k, v) ->
-                    sb.append("  ").append(k).append(": ").append(v).append(";\n"));
+                sb.append("  ").append(k).append(": ").append(v).append(";\n"));
             sb.append("}\n");
             return sb.toString();
         }
@@ -35,22 +35,22 @@ public enum ExportFormat {
             sb.append("  ").append(comment("Light")).append("\n");
             if (includePalettes) {
                 getPaletteColors(theme, false).forEach((k, v) ->
-                        sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
+                    sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
                 sb.append("\n");
             }
             getSchemeColors(theme, false).forEach((k, v) ->
-                    sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
+                sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
             sb.append("}\n\n");
             // Dark
             sb.append(".root:dark {\n");
             sb.append("  ").append(comment("Dark")).append("\n");
             if (includePalettes) {
                 getPaletteColors(theme, true).forEach((k, v) ->
-                        sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
+                    sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
                 sb.append("\n");
             }
             getSchemeColors(theme, true).forEach((k, v) ->
-                    sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
+                sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
             sb.append("}\n");
             return sb.toString();
         }

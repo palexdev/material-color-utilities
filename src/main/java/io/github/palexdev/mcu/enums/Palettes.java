@@ -39,7 +39,7 @@ public enum Palettes {
     @Override
     public String toString() {
         return (this == NEUTRAL_VARIANT) ?
-                "Neutral Variant" :
-                name().charAt(0) + name().substring(1).toLowerCase();
+            "Neutral Variant" :
+            name().charAt(0) + name().substring(1).toLowerCase();
     }
 }

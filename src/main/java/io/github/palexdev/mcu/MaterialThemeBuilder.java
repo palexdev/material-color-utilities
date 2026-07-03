@@ -78,12 +78,12 @@ public class MaterialThemeBuilder {
         DynamicScheme ls = variant.generateLight(seed);
         DynamicScheme ds = variant.generateDark(seed);
         Colors colors = new Colors(
-                Hct.fromInt(ls.getPrimaryPaletteKeyColor()),
-                Hct.fromInt(ls.getSecondaryPaletteKeyColor()),
-                Hct.fromInt(ls.getTertiaryPaletteKeyColor()),
-                Hct.fromInt(ls.errorPalette.getKeyColor().toInt()),
-                Hct.fromInt(ls.getNeutralPaletteKeyColor()),
-                Hct.fromInt(ls.getNeutralVariantPaletteKeyColor())
+            Hct.fromInt(ls.getPrimaryPaletteKeyColor()),
+            Hct.fromInt(ls.getSecondaryPaletteKeyColor()),
+            Hct.fromInt(ls.getTertiaryPaletteKeyColor()),
+            Hct.fromInt(ls.errorPalette.getKeyColor().toInt()),
+            Hct.fromInt(ls.getNeutralPaletteKeyColor()),
+            Hct.fromInt(ls.getNeutralVariantPaletteKeyColor())
         );
         // Custom colors
         Map<String, CustomColor> custom = new LinkedHashMap<>();

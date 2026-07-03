@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public record Colors(
-        Hct primary,
-        Hct secondary,
-        Hct tertiary,
-        Hct error,
-        Hct neutral,
-        Hct neutralVariant
+    Hct primary,
+    Hct secondary,
+    Hct tertiary,
+    Hct error,
+    Hct neutral,
+    Hct neutralVariant
 ) {
 
     //================================================================================
@@ -35,12 +35,12 @@ public record Colors(
     ///  BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
     ///  out.getGraphics().drawImage(bimg, 0, 0, null);
     ///  return out.getRGB(0, 0, w, h, null, 0, w);
-    /// ```
+    ///```
     public static List<String> extractFromPixels(int[] pixels) {
         Map<Integer, Integer> colors = QuantizerCelebi.quantize(pixels, 128);
         return Score.score(colors, 128, MaterialThemeBuilder.BASELINE_SEED.toInt()).stream()
-                .map(Colors::argbToWeb)
-                .toList();
+            .map(Colors::argbToWeb)
+            .toList();
     }
 
     /// Converts a color from hex to its argb representation.
@@ -72,8 +72,8 @@ public record Colors(
         int green = ColorUtils.greenFromArgb(argb);
         int blue = ColorUtils.blueFromArgb(argb);
         return alpha == 0xFF
-                ? String.format("#%02X%02X%02X", red, green, blue)
-                : String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
+            ? String.format("#%02X%02X%02X", red, green, blue)
+            : String.format("#%02X%02X%02X%02X", red, green, blue, alpha);
     }
 
     /// Delegates to [#argbToWeb] using [Hct#toInt()].
