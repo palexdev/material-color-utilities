@@ -57,8 +57,10 @@ public enum ExportFormat {
             // Light
             sb.append("  ").append(comment("Light"));
             sb.append("  ").append("-md-seed: ").append(argbToWeb(theme.seed().toInt())).append(";\n");
+            // Palettes are a property of the theme, not of the mode, so they are emitted once here and left to
+            // cascade into the dark block. Repeating them there would be ~160 identical lines
             if (includePalettes) {
-                getPaletteColors(theme, false).forEach((k, v) ->
+                getPaletteColors(theme).forEach((k, v) ->
                     sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
                 sb.append("\n");
             }
@@ -82,11 +84,6 @@ public enum ExportFormat {
             sb.append(".root:dark {\n");
             sb.append("  ").append(comment("Dark"));
             sb.append("  ").append("-md-seed: ").append(argbToWeb(theme.seed().toInt())).append(";\n");
-            if (includePalettes) {
-                getPaletteColors(theme, true).forEach((k, v) ->
-                    sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
-                sb.append("\n");
-            }
             getSchemeColors(theme, true).forEach((k, v) ->
                 sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
 
@@ -179,11 +176,13 @@ public enum ExportFormat {
         return colors;
     }
 
-    private static Map<String, String> getPaletteColors(MaterialTheme theme, boolean isDark) {
+    /// Note: no mode parameter. Every variant, on every spec version, builds the same palettes for both modes, only
+    /// the tones read off them differ.
+    private static Map<String, String> getPaletteColors(MaterialTheme theme) {
         Map<String, String> colors = new LinkedHashMap<>();
         for (Palettes palette : Palettes.values()) {
             String name = palette.toCssString();
-            TonalPalette tp = theme.palette(palette, isDark);
+            TonalPalette tp = theme.palette(palette, false);
             for (int tone : Palettes.TONES) {
                 String key = "--md-ref-palette-" + name + tone;
                 String val = argbToWeb(tp.tone(tone));
