@@ -24,9 +24,7 @@ import io.github.palexdev.mcu.vendor.dynamiccolor.DynamicScheme;
 import io.github.palexdev.mcu.vendor.hct.Hct;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static io.github.palexdev.mcu.Colors.webToHct;
 import static io.github.palexdev.mcu.vendor.blend.Blend.harmonize;
@@ -43,7 +41,7 @@ public class MaterialThemeBuilder {
     private final Hct seed;
     private SchemeVariant variant = DEFAULT_VARIANT;
     private boolean colorMatch = false;
-    private final Set<CustomColor> customColors = new LinkedHashSet<>();
+    private final Map<String, Spec> customColors = new LinkedHashMap<>();
 
     //================================================================================
     // Constructors
@@ -87,15 +85,16 @@ public class MaterialThemeBuilder {
         );
         // Custom colors
         Map<String, CustomColor> custom = new LinkedHashMap<>();
-        customColors.forEach(cc -> {
-            Hct seed = Hct.fromInt(cc.harmonized() ? harmonize(cc.seed().toInt(), this.seed.toInt()) : cc.seed().toInt());
-            if (DislikeAnalyzer.isDisliked(seed) && !colorMatch) {
-                seed = DislikeAnalyzer.fixIfDisliked(seed);
-            }
-            DynamicScheme cls = variant.generate(seed, false);
-            DynamicScheme cds = variant.generate(seed, true);
-            cc.setSchemes(cls, cds);
-            custom.put(cc.name(), cc);
+        customColors.forEach((name, spec) -> {
+            Hct resolved = spec.harmonized()
+                ? Hct.fromInt(harmonize(spec.seed().toInt(), seed.toInt()))
+                : spec.seed();
+            if (!colorMatch) resolved = DislikeAnalyzer.fixIfDisliked(resolved);
+            custom.put(name, new CustomColor(
+                name, spec.seed(), resolved, spec.harmonized(),
+                variant.generate(resolved, false),
+                variant.generate(resolved, true)
+            ));
         });
 
         return new MaterialTheme(variant, colors, ls, ds, custom);
@@ -114,8 +113,9 @@ public class MaterialThemeBuilder {
         return this;
     }
 
+    /// Registers an extra color to expand into its own schemes.
     public MaterialThemeBuilder customColor(String name, Hct color, boolean harmonize) {
-        customColors.add(new CustomColor(name, color, harmonize));
+        customColors.put(name, new Spec(color, harmonize));
         return this;
     }
 
@@ -126,4 +126,11 @@ public class MaterialThemeBuilder {
     public MaterialThemeBuilder customColor(String name, String webColor, boolean harmonize) {
         return customColor(name, webToHct(webColor), harmonize);
     }
+
+    //================================================================================
+    // Internal Classes
+    //================================================================================
+
+    /// A custom color as registered, before it is resolved against the theme's seed.
+    private record Spec(Hct seed, boolean harmonized) {}
 }

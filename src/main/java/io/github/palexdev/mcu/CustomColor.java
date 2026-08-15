@@ -21,53 +21,38 @@ package io.github.palexdev.mcu;
 import io.github.palexdev.mcu.vendor.dynamiccolor.DynamicScheme;
 import io.github.palexdev.mcu.vendor.hct.Hct;
 
-import java.util.Objects;
-
-public class CustomColor {
+/// A named extra color, resolved against a theme's seed and expanded into its own light/dark schemes.
+///
+/// Instances are produced by [MaterialThemeBuilder#generate()] and are immutable: every call to
+/// `generate()` creates fresh ones, so themes never share state.
+///
+/// @param seed         the color exactly as it was registered
+/// @param resolvedSeed the color that actually drove the schemes, after harmonization against the
+///                     theme seed and after the "universally disliked" fix. Equal to [#seed()] when
+///                     neither applied
+public record CustomColor(
+    String name,
+    Hct seed,
+    Hct resolvedSeed,
+    boolean harmonized,
+    DynamicScheme lightScheme,
+    DynamicScheme darkScheme
+) {
 
     //================================================================================
-    // Properties
+    // Methods
     //================================================================================
 
-    private final String name;
-    private final Hct seed;
-    private final boolean harmonized;
-
-    private DynamicScheme lightScheme;
-    private DynamicScheme darkScheme;
-
-    //================================================================================
-    // Constructors
-    //================================================================================
-
-    public CustomColor(String name, Hct seed, boolean harmonized) {
-        this.name = name;
-        this.seed = seed;
-        this.harmonized = harmonized;
+    public DynamicScheme scheme(boolean isDark) {
+        return isDark ? darkScheme : lightScheme;
     }
-
-    //================================================================================
-    // Overridden Methods
-    //================================================================================
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        CustomColor that = (CustomColor) o;
-        return Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name);
-    }
-
-    //================================================================================
-    // Getters/Setters
-    //================================================================================
 
     public int keyColor() {
         return seed.toInt();
+    }
+
+    public int resolvedKeyColor() {
+        return resolvedSeed.toInt();
     }
 
     public int color(boolean isDark) {
@@ -84,26 +69,5 @@ public class CustomColor {
 
     public int onColorContainer(boolean isDark) {
         return scheme(isDark).getOnPrimaryContainer();
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public Hct seed() {
-        return seed;
-    }
-
-    public boolean harmonized() {
-        return harmonized;
-    }
-
-    public DynamicScheme scheme(boolean isDark) {
-        return isDark ? darkScheme : lightScheme;
-    }
-
-    void setSchemes(DynamicScheme lightScheme, DynamicScheme darkScheme) {
-        this.lightScheme = lightScheme;
-        this.darkScheme = darkScheme;
     }
 }

@@ -6,6 +6,7 @@ import io.github.palexdev.mcu.enums.SchemeVariant;
 import io.github.palexdev.mcu.vendor.dynamiccolor.DynamicScheme;
 import io.github.palexdev.mcu.vendor.palettes.TonalPalette;
 
+import java.util.Collections;
 import java.util.Map;
 
 public record MaterialTheme(
@@ -62,5 +63,10 @@ public record MaterialTheme(
 
     public String export(ExportFormat format, boolean includePalettes) {
         return format.export(this, includePalettes);
+    }
+
+    @Override
+    public Map<String, CustomColor> customColors() {
+        return Collections.unmodifiableMap(customColors);
     }
 }
