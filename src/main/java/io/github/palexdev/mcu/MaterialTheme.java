@@ -4,6 +4,7 @@ import io.github.palexdev.mcu.enums.ExportFormat;
 import io.github.palexdev.mcu.enums.Palettes;
 import io.github.palexdev.mcu.enums.SchemeVariant;
 import io.github.palexdev.mcu.vendor.dynamiccolor.DynamicScheme;
+import io.github.palexdev.mcu.vendor.hct.Hct;
 import io.github.palexdev.mcu.vendor.palettes.TonalPalette;
 
 import java.util.Collections;
@@ -30,6 +31,10 @@ public record MaterialTheme(
     //================================================================================
     // Methods
     //================================================================================
+
+    public Hct seed() {
+        return lightScheme.getScheme().sourceColorHct;
+    }
 
     public ColorScheme colorScheme(boolean isDark) {
         return isDark ? darkScheme : lightScheme;
