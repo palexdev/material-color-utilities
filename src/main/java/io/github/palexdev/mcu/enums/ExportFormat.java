@@ -16,13 +16,36 @@ public enum ExportFormat {
             StringBuilder sb = new StringBuilder();
             // Light Scheme
             sb.append(".light {").append("\n");
+            sb.append("  ").append("--md-seed: ").append(argbToWeb(theme.seed().toInt())).append(";\n");
             getSchemeColors(theme, false).forEach((k, v) ->
                 sb.append("  ").append(k).append(": ").append(v).append(";\n"));
+            if (!theme.customColors().isEmpty()) {
+                sb.append("  ").append(comment("Custom"));
+                theme.customColors().forEach((n, c) -> {
+                    sb.append("  -").append(customSeed(n, c.keyColor())).append("\n");
+                    sb.append("  -").append(customColor(n, c.color(false))).append("\n");
+                    sb.append("  -").append(customColor("on-" + n, c.onColor(false))).append("\n");
+                    sb.append("  -").append(customColor(n + "-container", c.colorContainer(false))).append("\n");
+                    sb.append("  -").append(customColor("on-" + n + "-container", c.onColorContainer(false))).append("\n");
+                });
+            }
             sb.append("}\n\n");
+
             // Dark Scheme
             sb.append(".dark {").append("\n");
+            sb.append("  ").append("--md-seed: ").append(argbToWeb(theme.seed().toInt())).append(";\n");
             getSchemeColors(theme, true).forEach((k, v) ->
                 sb.append("  ").append(k).append(": ").append(v).append(";\n"));
+            if (!theme.customColors().isEmpty()) {
+                sb.append("  ").append(comment("Custom"));
+                theme.customColors().forEach((n, c) -> {
+                    sb.append("  -").append(customSeed(n, c.keyColor())).append("\n");
+                    sb.append("  -").append(customColor(n, c.color(true))).append("\n");
+                    sb.append("  -").append(customColor("on-" + n, c.onColor(true))).append("\n");
+                    sb.append("  -").append(customColor(n + "-container", c.colorContainer(true))).append("\n");
+                    sb.append("  -").append(customColor("on-" + n + "-container", c.onColorContainer(true))).append("\n");
+                });
+            }
             sb.append("}\n");
             return sb.toString();
         }
@@ -32,7 +55,8 @@ public enum ExportFormat {
         public String export(MaterialTheme theme, boolean includePalettes) {
             StringBuilder sb = new StringBuilder(".root {\n");
             // Light
-            sb.append("  ").append(comment("Light")).append("\n");
+            sb.append("  ").append(comment("Light"));
+            sb.append("  ").append("-md-seed: ").append(argbToWeb(theme.seed().toInt())).append(";\n");
             if (includePalettes) {
                 getPaletteColors(theme, false).forEach((k, v) ->
                     sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
@@ -40,10 +64,24 @@ public enum ExportFormat {
             }
             getSchemeColors(theme, false).forEach((k, v) ->
                 sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
+
+            // Light - Custom
+            if (!theme.customColors().isEmpty()) {
+                sb.append("  ").append(comment("Custom"));
+                theme.customColors().forEach((n, c) -> {
+                    sb.append("  ").append(customSeed(n, c.keyColor())).append("\n");
+                    sb.append("  ").append(customColor(n, c.color(false))).append("\n");
+                    sb.append("  ").append(customColor("on-" + n, c.onColor(false))).append("\n");
+                    sb.append("  ").append(customColor(n + "-container", c.colorContainer(false))).append("\n");
+                    sb.append("  ").append(customColor("on-" + n + "-container", c.onColorContainer(false))).append("\n");
+                });
+            }
             sb.append("}\n\n");
+
             // Dark
             sb.append(".root:dark {\n");
-            sb.append("  ").append(comment("Dark")).append("\n");
+            sb.append("  ").append(comment("Dark"));
+            sb.append("  ").append("-md-seed: ").append(argbToWeb(theme.seed().toInt())).append(";\n");
             if (includePalettes) {
                 getPaletteColors(theme, true).forEach((k, v) ->
                     sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
@@ -51,6 +89,18 @@ public enum ExportFormat {
             }
             getSchemeColors(theme, true).forEach((k, v) ->
                 sb.append("  ").append(k.substring(1)).append(": ").append(v).append(";\n"));
+
+            // Dark - Custom
+            if (!theme.customColors().isEmpty()) {
+                sb.append("  ").append(comment("Custom"));
+                theme.customColors().forEach((n, c) -> {
+                    sb.append("  ").append(customSeed(n, c.keyColor())).append("\n");
+                    sb.append("  ").append(customColor(n, c.color(true))).append("\n");
+                    sb.append("  ").append(customColor("on-" + n, c.onColor(true))).append("\n");
+                    sb.append("  ").append(customColor(n + "-container", c.colorContainer(true))).append("\n");
+                    sb.append("  ").append(customColor("on-" + n + "-container", c.onColorContainer(true))).append("\n");
+                });
+            }
             sb.append("}\n");
             return sb.toString();
         }
@@ -141,6 +191,14 @@ public enum ExportFormat {
             }
         }
         return colors;
+    }
+
+    private static String customColor(String name, int color) {
+        return "-md-sys-color-" + name + ": " + argbToWeb(color) + ";";
+    }
+
+    private static String customSeed(String name, int seed) {
+        return "-md-seed-" + name + ": " + argbToWeb(seed) + ";";
     }
 
     private static String colorKey(String color) {
