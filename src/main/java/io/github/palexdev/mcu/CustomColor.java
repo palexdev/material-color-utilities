@@ -18,33 +18,43 @@
 
 package io.github.palexdev.mcu;
 
-import io.github.palexdev.mcu.vendor.dynamiccolor.DynamicScheme;
+import io.github.palexdev.mcu.enums.ExtraColors;
 import io.github.palexdev.mcu.vendor.hct.Hct;
 
-/// A named extra color, resolved against a theme's seed and expanded into its own light/dark schemes.
+import java.util.Objects;
+
+/// A named extra color, resolved into its light/dark [ColorGroups][ColorGroup].
 ///
-/// Instances are produced by [MaterialThemeBuilder#generate()] and are immutable: every call to
-/// `generate()` creates fresh ones, so themes never share state.
+/// Instances are produced by [MaterialThemeBuilder#generate()] and are immutable: every call to `generate()`
+/// creates fresh ones, so themes never share state.
+///
+/// There are two derivation modes. Colors registered through [MaterialThemeBuilder#customColor(String, Hct, boolean)]
+/// are expanded through the theme's variant, so they follow it. The defaults in [ExtraColors] instead take their tones
+/// straight from a palette, exactly like Material's `error` role, so the variant has no effect on them.
+///
+/// The full schemes of a variant-derived color are not retained. To get one back:
+/// ```java
+/// DynamicScheme scheme = theme.variant().generate(customColor.resolvedSeed(), isDark);
+/// ```
 ///
 /// @param seed         the color exactly as it was registered
-/// @param resolvedSeed the color that actually drove the schemes, after harmonization against the
-///                     theme seed and after the "universally disliked" fix. Equal to [#seed()] when
-///                     neither applied
+/// @param resolvedSeed the color that actually drove the derivation, after harmonization against the theme seed
+///                     and after the "universally disliked" fix. Equal to [#seed()] when neither applied
 public record CustomColor(
     String name,
     Hct seed,
     Hct resolvedSeed,
     boolean harmonized,
-    DynamicScheme lightScheme,
-    DynamicScheme darkScheme
+    ColorGroup light,
+    ColorGroup dark
 ) {
 
     //================================================================================
     // Methods
     //================================================================================
 
-    public DynamicScheme scheme(boolean isDark) {
-        return isDark ? darkScheme : lightScheme;
+    public ColorGroup group(boolean isDark) {
+        return isDark ? dark : light;
     }
 
     public int keyColor() {
@@ -56,18 +66,38 @@ public record CustomColor(
     }
 
     public int color(boolean isDark) {
-        return scheme(isDark).getPrimary();
+        return group(isDark).color();
     }
 
     public int onColor(boolean isDark) {
-        return scheme(isDark).getOnPrimary();
+        return group(isDark).onColor();
     }
 
     public int colorContainer(boolean isDark) {
-        return scheme(isDark).getPrimaryContainer();
+        return group(isDark).colorContainer();
     }
 
     public int onColorContainer(boolean isDark) {
-        return scheme(isDark).getOnPrimaryContainer();
+        return group(isDark).onColorContainer();
+    }
+
+    //================================================================================
+    // Overridden Methods
+    //================================================================================
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof CustomColor that)) return false;
+        return harmonized == that.harmonized
+            && Objects.equals(name, that.name)
+            && keyColor() == that.keyColor()
+            && resolvedKeyColor() == that.resolvedKeyColor()
+            && Objects.equals(light, that.light)
+            && Objects.equals(dark, that.dark);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, keyColor(), resolvedKeyColor(), harmonized, light, dark);
     }
 }
