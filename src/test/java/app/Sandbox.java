@@ -42,6 +42,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
+
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
@@ -74,9 +75,9 @@ public class Sandbox {
                 SchemeVariant variant = variants.getSelectionModel().getSelectedItem();
                 boolean isDark = dark.isSelected();
                 MaterialTheme theme = MaterialThemeBuilder.theme()
-                        .extraSemanticColors(true)
-                        .variant(variant)
-                        .generate();
+                    .extraSemanticColors(true)
+                    .variant(variant)
+                    .generate();
 
                 // The surface the cards sit on, so the preview matches how these would really be seen
                 int surface = theme.colorScheme(isDark).getSurface();
@@ -84,16 +85,16 @@ public class Sandbox {
                 swatches.setBackground(fill(surface, 0.0));
 
                 swatches.getChildren().setAll(
-                        header(onSurface),
-                        row("error", onSurface,
-                                theme.colorScheme(isDark).getError(),
-                                theme.colorScheme(isDark).getOnError(),
-                                theme.colorScheme(isDark).getErrorContainer(),
-                                theme.colorScheme(isDark).getOnErrorContainer())
+                    header(onSurface),
+                    row("error", onSurface,
+                        theme.colorScheme(isDark).getError(),
+                        theme.colorScheme(isDark).getOnError(),
+                        theme.colorScheme(isDark).getErrorContainer(),
+                        theme.colorScheme(isDark).getOnErrorContainer())
                 );
                 theme.customColors().forEach((n, c) -> swatches.getChildren().add(
-                        row(n, onSurface, c.color(isDark), c.onColor(isDark),
-                                c.colorContainer(isDark), c.onColorContainer(isDark))
+                    row(n, onSurface, c.color(isDark), c.onColor(isDark),
+                        c.colorContainer(isDark), c.onColorContainer(isDark))
                 ));
 
                 System.out.println("========== " + variant + (isDark ? " (dark)" : " (light)") + " ==========");
@@ -115,7 +116,7 @@ public class Sandbox {
 
         private HBox header(int onSurface) {
             HBox box = new HBox(8.0, spacer(), title("on-color", onSurface),
-                    title("forced white", onSurface), title("container", onSurface));
+                title("forced white", onSurface), title("container", onSurface));
             box.setAlignment(Pos.CENTER_LEFT);
             return box;
         }
@@ -127,9 +128,9 @@ public class Sandbox {
             label.setMinWidth(80.0);
             label.setTextFill(Color.web(argbToWeb(onSurface)));
             HBox box = new HBox(8.0, label,
-                    card(name, color, onColor),
-                    card(name, color, 0xFFFFFFFF),
-                    card(name, container, onContainer));
+                card(name, color, onColor),
+                card(name, color, 0xFFFFFFFF),
+                card(name, container, onContainer));
             box.setAlignment(Pos.CENTER_LEFT);
             return box;
         }
@@ -141,7 +142,7 @@ public class Sandbox {
             label.setFont(Font.font("System", 15.0));
 
             double ratio = Contrast.ratioOfTones(
-                    Hct.fromInt(background).getTone(), Hct.fromInt(foreground).getTone());
+                Hct.fromInt(background).getTone(), Hct.fromInt(foreground).getTone());
             Label sub = new Label("%.2f:1 %s".formatted(ratio, ratio >= 4.5 ? "AA" : "fail"));
             sub.setTextFill(Color.web(argbToWeb(foreground)));
             sub.setFont(Font.font("System", 11.0));
@@ -170,7 +171,7 @@ public class Sandbox {
 
         private Background fill(int argb, double radius) {
             return new Background(new BackgroundFill(
-                    Color.web(argbToWeb(argb)), new CornerRadii(radius), Insets.EMPTY));
+                Color.web(argbToWeb(argb)), new CornerRadii(radius), Insets.EMPTY));
         }
     }
 

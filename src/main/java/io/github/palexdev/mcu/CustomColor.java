@@ -35,9 +35,9 @@ import java.util.Objects;
 /// The full schemes of a variant-derived color are not retained. To get one back:
 /// ```java
 /// DynamicScheme scheme = theme.variant().generate(customColor.resolvedSeed(), isDark);
-/// ```
+///```
 ///
-/// @param seed         the color exactly as it was registered
+/// @param seed the color exactly as it was registered
 /// @param resolvedSeed the color that actually drove the derivation, after harmonization against the theme seed
 ///                     and after the "universally disliked" fix. Equal to [#seed()] when neither applied
 public record CustomColor(
@@ -89,11 +89,11 @@ public record CustomColor(
     public boolean equals(Object o) {
         if (!(o instanceof CustomColor that)) return false;
         return harmonized == that.harmonized
-            && Objects.equals(name, that.name)
-            && keyColor() == that.keyColor()
-            && resolvedKeyColor() == that.resolvedKeyColor()
-            && Objects.equals(light, that.light)
-            && Objects.equals(dark, that.dark);
+               && Objects.equals(name, that.name)
+               && keyColor() == that.keyColor()
+               && resolvedKeyColor() == that.resolvedKeyColor()
+               && Objects.equals(light, that.light)
+               && Objects.equals(dark, that.dark);
     }
 
     @Override
